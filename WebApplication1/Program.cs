@@ -1,4 +1,5 @@
 using App.Business;
+using App.Business.Exceptions;
 using App.Business.Services;
 using App.Data;
 using App.Data.Contexts;
@@ -88,5 +89,22 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (BusinessExceptionHandler ex)
+    {
+        context.Response.StatusCode = 400;
+        await context.Response.WriteAsJsonAsync(new 
+        {
+            StatusCode = ex.StatusCode,
+            Message = ex.Message,
+
+        });
+    }
+});
 
 app.Run();

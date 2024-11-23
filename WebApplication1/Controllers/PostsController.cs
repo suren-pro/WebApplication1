@@ -92,7 +92,7 @@ namespace WebApplication1.Controllers
         [HttpPut("UpdatePost")]
         public async Task<IActionResult> Put([FromBody] PostDto postDto)
         {
-            await postService.AddAsync(postDto);
+            await postService.UpdateAsync(postDto);
             return Ok(new { Message = "Post updated" });
         }
 

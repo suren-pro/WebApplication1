@@ -31,6 +31,8 @@ namespace App.Business.Services
 
         public async Task AddComment(CommentDto commentDto)
         {
+            CheckPostExists(commentDto.PostId);
+            await CheckUserExists(commentDto.UserId);
             Comment comment = mapper.Map<Comment>(commentDto);
             await unitOfWork.Repository<Comment>().AddAsync(comment);
             await unitOfWork.SaveChangesAsync();
@@ -39,10 +41,10 @@ namespace App.Business.Services
         public async Task<List<PostDto>> GetPostByUserId(int userId)
         {
             List<PostDto> postsDtos = new List<PostDto>();
-            User user = await unitOfWork.Repository<User>().GetById(userId);
-            if (user is null)
-                throw new EntityNotFoundException("User not found");
-            List<Post> posts = await unitOfWork.Repository<Post>().GetAllAsync(p=>p.Comments,p=> p.Likes);
+            User user = await CheckUserExists(userId);
+            List<Post> posts = await unitOfWork.Repository<Post>().GetAllAsync(
+                p=>p.Comments,
+                p=> p.Likes);
             posts = posts.Where(p => p.UserId == user.UserId).ToList();
             postsDtos = mapper.Map<List<PostDto>>(posts);
             return postsDtos;
@@ -50,6 +52,7 @@ namespace App.Business.Services
 
         public async Task<List<PostDto>> GetPostByUserId(int userId, int page, int count)
         {
+            await CheckUserExists(userId);
             List<PostDto> posts = await GetPostByUserId(userId);
             return posts
                 .Skip((page - 1)*count)
@@ -60,9 +63,31 @@ namespace App.Business.Services
 
         public async Task Like(LikeDto likeDto)
         {
+            CheckPostExists(likeDto.PostId);
+            await CheckUserExists(likeDto.UserId);
             Like like = mapper.Map<Like>(likeDto);
             await unitOfWork.Repository<Like>().AddAsync(like);
             await unitOfWork.SaveChangesAsync();
+        }
+
+
+        private async Task<User> CheckUserExists(int userId)
+        {
+            User user =  unitOfWork.Repository<User>().GetById(userId);
+            if (user is null)
+            {
+                throw new BusinessExceptionHandler(ErrorStatusCode.UserNotExist, "User not exsist");
+            }
+            return user;
+        }
+        private  Post CheckPostExists(int postId)
+        {
+            Post post = unitOfWork.Repository<Post>().GetById(postId);
+            if (post is null)
+            {
+                throw new BusinessExceptionHandler(ErrorStatusCode.PostNotExist, "Post not exsist");
+            }
+            return post;
         }
     }
 }

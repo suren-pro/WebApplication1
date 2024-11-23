@@ -24,10 +24,12 @@ namespace App.Business.Services
         {
             await unitOfWork.Repository<TEntity>().AddAsync(mapper.Map<TEntity>(dto));
             await unitOfWork.SaveChangesAsync();
+
         }
 
         public async Task DeleteAsync(int id)
         {
+            CheckEntityExists(id);
             await unitOfWork.Repository<TEntity>().DeleteAsync(id);
             await unitOfWork.SaveChangesAsync();
 
@@ -35,6 +37,9 @@ namespace App.Business.Services
 
         public async Task UpdateAsync(TDto entity)
         {
+            int entityId = Convert.ToInt32(entity.GetType().GetProperties().First(n => n.Name.Contains("Id"))
+                .GetValue(entity));
+            CheckEntityExists(entityId);
             unitOfWork.Repository<TEntity>().UpdateAsync(mapper.Map<TEntity>(entity));
             await unitOfWork.SaveChangesAsync();
 
@@ -51,7 +56,7 @@ namespace App.Business.Services
                 }
                 else
                 {
-                    throw new EntityNotFoundException($"No {typeof(TDto).Name}s were found");
+                    throw new BusinessExceptionHandler(ErrorStatusCode.FailedToGetData,$"No {typeof(TDto).Name}s were found");
                 }
 
             }
@@ -59,30 +64,23 @@ namespace App.Business.Services
             {
                 var message = $"Error retrieving all {typeof(TDto).Name}s";
 
-                throw new EntityNotFoundException(message, ex);
+                throw new BusinessExceptionHandler(ErrorStatusCode.FailedToGetData, $"No {typeof(TDto).Name}s were found");
             }
         }
 
         public async Task<TDto> GetAsync(int id)
         {
-            try
-            {
-                var result = await unitOfWork.Repository<TEntity>().GetById(id);
+            var result =  unitOfWork.Repository<TEntity>().GetById(id);
+            CheckEntityExists(id);
+            await unitOfWork.SaveChangesAsync();
+            return mapper.Map<TDto>(result);
+        }
 
-                if (result is null)
-                {
-                    throw new EntityNotFoundException($"Entity with ID {id} not found.");
-                }
-
-                return mapper.Map<TDto>(result);
-            }
-
-            catch (EntityNotFoundException ex)
-            {
-                var message = $"Error retrieving {typeof(TDto).Name} with Id: {id}";
-
-                throw new EntityNotFoundException(message, ex);
-            }
+        private void CheckEntityExists(int id)
+        {
+            TEntity result =  unitOfWork.Repository<TEntity>().GetById(id);
+            if (result is null)
+                throw new BusinessExceptionHandler(ErrorStatusCode.PostNotExist, "Object not exsist");
         }
     }
 }

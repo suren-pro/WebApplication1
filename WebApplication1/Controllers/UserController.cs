@@ -42,8 +42,8 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> Post([FromBody] UserDto userDto)
         {
             userDto.Password = HashService.HashString(userDto.Password);
-            await userService.AddAsync(userDto);
-            return Ok(userDto);
+            await userService.AddUser(userDto);
+            return Ok(new {Message ="User successfully added"});
         }
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginViewModel userViewModel)

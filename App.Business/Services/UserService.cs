@@ -11,6 +11,12 @@ using System.Threading.Tasks;
 
 namespace App.Business.Services
 {
+    public interface IUserService : IGenericServiceAsync<User, UserDto>
+    {
+        Task<UserDto?> Login(string username, string password);
+        Task<UserDto> GetUserDto(int id);
+        Task AddUser(UserDto userDto);
+    }
     public class UserService : GenericService<User, UserDto>, IUserService
     {
         private readonly IUnitOfWork unitOfWork;
@@ -21,6 +27,14 @@ namespace App.Business.Services
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
         }
+
+        public async Task AddUser(UserDto userDto)
+        {
+            await CheckUsernameExists(userDto);
+            await AddAsync(userDto);
+        }
+
+        
 
         public async Task<UserDto> GetUserDto(int id)
         {
@@ -48,12 +62,15 @@ namespace App.Business.Services
             }
             return userDto;
         }
+        private async Task CheckUsernameExists(UserDto userDto)
+        {
+            List<User> users = await unitOfWork.Repository<User>().GetAllAsync();
+            User user = users.SingleOrDefault(u=>u.Username == userDto.Username);
+            if (user != null)
+                throw new BusinessExceptionHandler(ErrorStatusCode.UsernameAlreadyExists, "Username already taken");
 
+        }
     }
 
-    public interface IUserService:IGenericServiceAsync<User,UserDto>
-    {
-        Task<UserDto?> Login(string username, string password);
-        Task<UserDto> GetUserDto(int id);
-    }
+    
 }
