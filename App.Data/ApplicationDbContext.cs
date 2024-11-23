@@ -19,13 +19,6 @@ namespace App.Data
 
 
         }
-       
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseNpgsql("Host=localhost;Database=social_network;Username=postgres;Password=1234");
-        }
-        
-
         public DbSet<User>? Users { get; set; }
         public DbSet<Post>? Posts { get; set; }
         public DbSet<Comment>? Comments { get; set; }
