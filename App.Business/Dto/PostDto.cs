@@ -13,6 +13,8 @@ namespace App.Business.Dto
         public string Description { get; set; }
         public string Picture { get; set; }
         public int UserId { get; set; }
+        public List<CommentDto> Comments { get; set; }
+        public List<LikeDto> Likes { get; set; }
         public int LikesCount { get; set; }
     }
 }

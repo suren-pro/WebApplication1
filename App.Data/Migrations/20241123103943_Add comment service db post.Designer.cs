@@ -3,6 +3,7 @@ using System;
 using App.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241123103943_Add comment service db post")]
+    partial class Addcommentservicedbpost
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,27 +52,6 @@ namespace App.Data.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("App.Data.Models.Like", b =>
-                {
-                    b.Property<int>("LikeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("LikeId"));
-
-                    b.Property<int>("PostId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("LikeId");
-
-                    b.HasIndex("PostId");
-
-                    b.ToTable("Likes");
-                });
-
             modelBuilder.Entity("App.Data.Models.Post", b =>
                 {
                     b.Property<int>("PostId")
@@ -81,6 +63,9 @@ namespace App.Data.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("LikesCount")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Picture")
                         .IsRequired()
@@ -158,15 +143,6 @@ namespace App.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("App.Data.Models.Like", b =>
-                {
-                    b.HasOne("App.Data.Models.Post", null)
-                        .WithMany("Likes")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("App.Data.Models.Post", b =>
                 {
                     b.HasOne("App.Data.Models.User", "User")
@@ -181,8 +157,6 @@ namespace App.Data.Migrations
             modelBuilder.Entity("App.Data.Models.Post", b =>
                 {
                     b.Navigation("Comments");
-
-                    b.Navigation("Likes");
                 });
 #pragma warning restore 612, 618
         }
