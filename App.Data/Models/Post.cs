@@ -17,6 +17,6 @@ namespace App.Data.Models
         [ForeignKey("UserId")]
         public User User { get; set; }
         public List<Comment> Comments { get; set; }
-        public int LikesCount { get; set; }
+        public List<Like> Likes { get; set; }
     }
 }

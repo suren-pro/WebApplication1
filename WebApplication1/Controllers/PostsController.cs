@@ -77,6 +77,16 @@ namespace WebApplication1.Controllers
             await postService.AddComment(commentDto);
             return Ok(new { Message = "Comment added" });
         }
+        [HttpPost("SetLike")]
+        public async Task<IActionResult> SetLike([FromBody] LikeViewModel like)
+        {
+            int userId = Convert.ToInt32(User?.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
+            LikeDto likeDto = new LikeDto();
+            likeDto.UserId = userId;
+            likeDto.PostId = like.PostId;
+            await postService.Like(likeDto);
+            return Ok(new { Message = "Like was sent" });
+        }
 
         // PUT api/<PostsController>/5
         [HttpPut("UpdatePost")]
