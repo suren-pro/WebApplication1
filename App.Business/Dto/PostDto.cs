@@ -16,5 +16,16 @@ namespace App.Business.Dto
         public List<CommentDto> Comments { get; set; }
         public List<LikeDto> Likes { get; set; }
         public int LikesCount { get; set; }
+        public PostDto()
+        {
+                Comments = new List<CommentDto>();
+                Likes = new List<LikeDto>();
+        }
+        public PostDto(string title,string description,string picture)
+        {
+            Title = title;
+            Description = description;
+            Picture = picture;
+        }
     }
 }

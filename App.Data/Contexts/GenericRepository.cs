@@ -16,7 +16,7 @@ namespace App.Data.Contexts
         Task<List<T>> GetAllAsync();
         Task<List<T>> GetAllAsync(params Expression<Func<T, object>>[] includeProperties);
         Task DeleteAsync(int id);
-        Task<T> GetById(int id);
+        T GetById(int id);
 
     }
     public class GenericRepository<T> : IGenericRepository<T> where T : class
@@ -55,9 +55,11 @@ namespace App.Data.Contexts
             return await query.ToListAsync();
         }
 
-        public async Task<T> GetById(int id)
+        public  T GetById(int id)
         {
-            return await _dbSet.FindAsync(id);
+            T t = _dbSet.Find(id);
+            _context.ChangeTracker.Clear();
+            return t;
             
         }
 
