@@ -9,6 +9,7 @@ namespace App.Business
         {
             CreateMap<UserDto, User>().ReverseMap();
             CreateMap<PostDto, Post>().ReverseMap();
+            CreateMap<CommentDto, Comment>().ReverseMap();
         }
     }
 }

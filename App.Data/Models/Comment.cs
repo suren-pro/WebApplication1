@@ -7,16 +7,14 @@ using System.Threading.Tasks;
 
 namespace App.Data.Models
 {
-    public class Post
+    public class Comment
     {
-        public int PostId { get; set; }
-        public string Title { get; set; }
+        public int CommentId { get; set; }
         public string Description { get; set; }
+        public int PostId { get; set; }
         public int UserId { get; set; }
-        public string Picture { get; set; }
         [ForeignKey("UserId")]
         public User User { get; set; }
-        public List<Comment> Comments { get; set; }
-        public int LikesCount { get; set; }
+        public Post Post { get; set; }
     }
 }

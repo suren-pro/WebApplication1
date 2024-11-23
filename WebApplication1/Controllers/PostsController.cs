@@ -2,6 +2,7 @@
 using App.Business.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebApplication1.ViewModels;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -64,6 +65,17 @@ namespace WebApplication1.Controllers
             postDto.UserId = userId;
             await postService.AddAsync(postDto);
             return Ok(new { Message = "Post added" });
+        }
+        [HttpPost("AddComment")]
+        public async Task<IActionResult> AddComment([FromBody] CommentViewModel commentView)
+        {
+            int userId = Convert.ToInt32(User?.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
+            CommentDto commentDto = new CommentDto();
+            commentDto.UserId = userId;
+            commentDto.Description = commentView.Description;
+            commentDto.PostId = commentView.PostId;
+            await postService.AddComment(commentDto);
+            return Ok(new { Message = "Comment added" });
         }
 
         // PUT api/<PostsController>/5

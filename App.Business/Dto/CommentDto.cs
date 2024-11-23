@@ -6,14 +6,11 @@ using System.Threading.Tasks;
 
 namespace App.Business.Dto
 {
-    public class PostDto
+    public class CommentDto
     {
-        public int PostId { get; set; }
-        public string Title { get; set; }
+        public int CommentId { get; set; }
         public string Description { get; set; }
-        public string Picture { get; set; }
+        public int PostId { get; set; }
         public int UserId { get; set; }
-        public List<CommentDto> Comments { get; set; }
-        public int LikesCount { get; set; }
     }
 }
