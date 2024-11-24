@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace App.Business.Services
 {
-    public interface IPostService:IGenericServiceAsync<Post,PostDto>
+    public interface IPostService:IGenericBusinessService<PostDto>
     {
         Task<List<PostDto>> GetPostByUserId(int userId);
         Task<List<PostDto>> GetPostByUserId(int userId,int page,int count);
