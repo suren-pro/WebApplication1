@@ -2,6 +2,7 @@
 using App.Data.Contexts;
 using AutoMapper;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,7 @@ namespace App.Business.Services
     {
         private readonly IMapper mapper;
         private readonly IUnitOfWork unitOfWork;
+        
         
         public GenericService(IUnitOfWork unitOfWork,IMapper mapper)
         {
@@ -81,6 +83,15 @@ namespace App.Business.Services
             TEntity result =  unitOfWork.Repository<TEntity>().GetById(id);
             if (result is null)
                 throw new BusinessExceptionHandler(ErrorStatusCode.PostNotExist, "Object not exsist");
+        }
+
+        public async Task<IEnumerable<TDto>> GetAllAsyncByPage(int page,int count)
+        {
+            IEnumerable<TDto> list = await GetAllAsync();
+            return list
+                .Skip((page - 1) * count)
+                .Take(count)
+                .ToList();
         }
     }
 }

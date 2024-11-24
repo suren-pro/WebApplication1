@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace App.Business.Services
 {
-    public interface IUserService : IGenericServiceAsync<User, UserDto>
+    public interface IUserService : IGenericBusinessService<UserDto>
     {
         Task<UserDto?> Login(string username, string password);
         Task<UserDto> GetUserDto(int id);
@@ -33,9 +33,6 @@ namespace App.Business.Services
             await CheckUsernameExists(userDto);
             await AddAsync(userDto);
         }
-
-        
-
         public async Task<UserDto> GetUserDto(int id)
         {
             UserDto userDto = await GetAsync(id);

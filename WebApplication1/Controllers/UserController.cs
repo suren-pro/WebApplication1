@@ -12,39 +12,30 @@ namespace WebApplication1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : GenericController<UserDto>
     {
         private readonly IUserService userService;
         private readonly IJwtService jwtService;
-
-        public UserController(IUserService userService,IJwtService jwtService) 
+        public UserController(IUserService userService,IJwtService jwtService):base(userService)
         {
             this.userService = userService;
             this.jwtService = jwtService;
         }
-        // GET: api/<UserController>
-        [HttpGet]
-        public async Task<IEnumerable<UserDto>> Get()
-        {
-            return await userService.GetAllAsync();
-        }
+
         [Authorize]
-        // GET api/<UserController>/5
         [HttpGet("GetUser")]
         public async Task<UserDto> GetUser()
         {
-            int userId = Convert.ToInt32(User?.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
-            return await userService.GetUserDto(userId);
+            return await userService.GetUserDto(GetUserId());
         }
-
-        // POST api/<UserController>
-        [HttpPost("AddUser")]
-        public async Task<IActionResult> Post([FromBody] UserDto userDto)
+        [HttpPost]
+        public override async Task<IActionResult> Create([FromBody] UserDto userDto)
         {
             userDto.Password = HashService.HashString(userDto.Password);
             await userService.AddUser(userDto);
             return Ok(new {Message ="User successfully added"});
         }
+        [AllowAnonymous]
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginViewModel userViewModel)
         {
@@ -59,22 +50,12 @@ namespace WebApplication1.Controllers
             else
                 return BadRequest(new {Message ="Login failed"});
         }
-
-        // PUT api/<UserController>/5
-        [HttpPut("UpdateUser")]
-        public async Task<IActionResult> Put([FromBody] UserDto userDto)
+        [HttpPut]
+        public override async Task<IActionResult> Update([FromBody] UserDto userDto)
         {
             userDto.Password = HashService.HashString(userDto.Password);
             await userService.UpdateAsync(userDto);
             return Ok(userDto);
-        }
-
-        // DELETE api/<UserController>/5
-        [HttpDelete("RemoveUser/{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            await userService.DeleteAsync(id);
-            return Ok("User  was removed");
         }
     }
 }

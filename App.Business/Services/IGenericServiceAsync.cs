@@ -9,9 +9,11 @@ namespace App.Business.Services
     public interface IGenericServiceAsync<TEntity,TDto> where TEntity : class where TDto:class
     {
         Task<IEnumerable<TDto>> GetAllAsync();
+        Task<IEnumerable<TDto>> GetAllAsyncByPage(int page,int count);
         Task<TDto> GetAsync(int id);
         Task DeleteAsync(int id);
         Task UpdateAsync(TDto entity);
         Task AddAsync(TDto dto);
     }
+  
 }
